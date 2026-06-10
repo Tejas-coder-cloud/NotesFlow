@@ -12,7 +12,7 @@ function Register() {
         e.preventDefault();
         try {
             const response = await axios.post(
-                "http://localhost:5000/api/auth/register",
+                "https://notesflow-backend-frui.onrender.com/api/auth/register",
                 {
                     name,
                     email,

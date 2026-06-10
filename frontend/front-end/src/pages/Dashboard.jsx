@@ -12,7 +12,7 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://localhost:5000/api/notes",
+        "https://notesflow-backend-frui.onrender.com/api/notes",
         {
           headers:
           {
