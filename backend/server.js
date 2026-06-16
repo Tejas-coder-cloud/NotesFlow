@@ -2,6 +2,7 @@ require("dotenv").config();
 console.log("JWT SECRET:", process.env.JWT_SECRET)
 const express = require("express");
 const noteRoutes = require("./routes/noteRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 const authRoutes = require("./routes/authRoutes");
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -12,6 +13,10 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
+app.use(
+    "/api/ai",
+    aiRoutes
+);
 app.get("/", (req, res) => {
     res.send("NotesFlow Backend Running");
 });

@@ -8,6 +8,7 @@ function Dashboard() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [editId, setEditId] = useState(null);
+  const [summaries, setSummaries] = useState({});
   const fetchNotes = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -26,11 +27,8 @@ function Dashboard() {
     }
   };
   const createNote = async () => {
-
     try {
-
       const token = localStorage.getItem("token");
-
       await axios.post(
         "https://notesflow-backend-frui.onrender.com/api/notes",
         {
@@ -43,23 +41,16 @@ function Dashboard() {
           }
         }
       );
-
       setTitle("");
       setContent("");
-
       fetchNotes();
-
     } catch (error) {
-
       console.log(error);
     }
   };
   const deleteNote = async (id) => {
-
     try {
-
       const token = localStorage.getItem("token");
-
       await axios.delete(
         `https://notesflow-backend-frui.onrender.com/api/notes/${id}`,
         {
@@ -68,20 +59,14 @@ function Dashboard() {
           }
         }
       );
-
       fetchNotes();
-
     } catch (error) {
-
       console.log(error);
     }
   };
   const updateNote = async () => {
-
     try {
-
       const token = localStorage.getItem("token");
-
       await axios.put(
         `https://notesflow-backend-frui.onrender.com/api/notes/${editId}`,
         {
@@ -94,101 +79,165 @@ function Dashboard() {
           }
         }
       );
-
       setEditId(null);
       setTitle("");
       setContent("");
-
       fetchNotes();
-
     } catch (error) {
-
       console.log(error);
     }
   };
   useEffect(() => {
-
     fetchNotes();
-
   }, []);
+  const generateSummary = async (content) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.post(
+        "https://notesflow-backend-frui.onrender.com/api/ai/summary",
+        {
+          content
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      setSummaries((prev) => ({
+        ...prev,
+        [content]: response.data.summary
+      }));
+
+    } catch (error) {
+      console.log(error);
+      alert("Failed to generate summary");
+    }
+  };
   return (
     <div className="dashboard-page">
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">
-          NotesFlow Dashboard
-        </h1>
-        <button
-          className="logout-btn"
-          onClick={() => {
-            localStorage.removeItem("token");
-            navigate("/");
-          }}
-        >
-          Logout
-        </button>
-      </div>
-      <div className="note-form">
-        <h2>
-          {editId ? "Update Note" : "Create Note"}
-        </h2>
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          placeholder="Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <button
-          className="primary-btn"
-          onClick={
-            editId
-              ? updateNote
-              : createNote
-          }
-        >
-          {
-            editId
+      <div className="dashboard">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">
+            NotesFlow Dashboard
+          </h1>
+          <button
+            className="logout-btn"
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/");
+            }}
+          >
+            Logout
+          </button>
+        </div>
+        <div className="note-form">
+          <h2>
+            {editId
               ? "Update Note"
-              : "Create Note"
+              : "Create Note"}
+          </h2>
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) =>
+              setTitle(e.target.value)
+            }
+          />
+          <textarea
+            placeholder="Content"
+            value={content}
+            onChange={(e) =>
+              setContent(e.target.value)
+            }
+          />
+          <button
+            className="primary-btn"
+            onClick={
+              editId
+                ? updateNote
+                : createNote
+            }
+          >
+            {
+              editId
+                ? "Update Note"
+                : "Create Note"
+            }
+          </button>
+        </div>
+        <div className="notes-section">
+          <h2>Your Notes</h2>
+          {
+            notes.map((note) => (
+              <div
+                key={note._id}
+                className="note-card"
+              >
+                <h3>{note.title}</h3>
+                <p>{note.content}</p>
+                <button
+                  className="edit-btn"
+                  onClick={() => {
+                    setTitle(note.title);
+                    setContent(note.content);
+                    setEditId(note._id);
+                  }}
+                >
+                  Edit
+                </button>
+
+                <button
+                  className="delete-btn"
+                  onClick={() =>
+                    deleteNote(note._id)
+                  }
+                >
+                  Delete
+                </button>
+                <button
+                  className="primary-btn"
+                  onClick={() =>
+                    generateSummary(
+                      note.content
+                    )
+                  }
+                >
+                  Generate Summary
+                </button>
+                {
+                  summaries[note.content] && (
+                    <div
+                      style={{
+                        marginTop: "10px",
+                        padding: "10px",
+                        border:
+                          "1px solid #ccc",
+                        borderRadius: "5px",
+                        backgroundColor:
+                          "#f8f8f8"
+                      }}
+                    >
+                      <h4>
+                        AI Summary
+                      </h4>
+                      <p>
+                        {
+                          summaries[
+                          note.content
+                          ]
+                        }
+                      </p>
+                    </div>
+                  )
+                }
+              </div>
+            ))
           }
-        </button>
+        </div>
       </div>
-      <div className="notes-section">
-        <h2>Your Notes</h2>
-        {
-          notes.map((note) => (
-            <div
-              key={note._id}
-              className="note-card"
-            >
-              <h3>{note.title}</h3>
-              <p>{note.content}</p>
-              <button
-                className="edit-btn"
-                onClick={() => {
-                  setTitle(note.title);
-                  setContent(note.content);
-                  setEditId(note._id);
-                }}
-              >
-                Edit
-              </button>
-              <button
-                className="delete-btn"
-                onClick={() => deleteNote(note._id)}
-              >
-                Delete
-              </button>
-            </div>
-          ))
-        }
-      </div>
-    </div>
     </div>
   );
 }
