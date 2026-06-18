@@ -248,3 +248,65 @@
 
     background: #dc2626;
 }
+@media screen and (max-width: 768px) {
+
+  .dashboard-page {
+    padding: 20px 10px;
+  }
+
+  .dashboard {
+    width: 100%;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .dashboard-title {
+    font-size: 2rem;
+  }
+
+  .logout-btn {
+    width: 100%;
+  }
+
+  .note-form {
+    padding: 20px;
+  }
+
+  .note-form input,
+  .note-form textarea {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .note-card {
+    padding: 18px;
+    overflow: hidden;
+  }
+
+  .note-card h3 {
+    font-size: 1.2rem;
+    word-break: break-word;
+  }
+
+  .note-card p {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    font-size: 14px;
+  }
+
+  .edit-btn,
+  .delete-btn,
+  .primary-btn {
+    width: 100%;
+    margin-top: 10px;
+    margin-right: 0;
+  }
+
+  .notes-section h2 {
+    font-size: 1.5rem;
+  }
+}

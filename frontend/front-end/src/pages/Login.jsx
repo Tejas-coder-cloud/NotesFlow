@@ -1,5 +1,6 @@
 import { useState } from "react";
-import "../styles/Login.css"
+import "../styles/Login.css";
+import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +26,7 @@ function Login() {
       );
       navigate("/dashboard");
       console.log(response.data);
-      alert("Login Successful");
+      toast.success("Login Successful");
     } catch (error) {
 
       console.log(error.response.data);

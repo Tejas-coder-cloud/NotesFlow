@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import axios from "axios";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
@@ -112,7 +113,7 @@ function Dashboard() {
 
     } catch (error) {
       console.log(error);
-      alert("Failed to generate summary");
+      toast.error("Failed to generate summary");
     }
   };
   return (
