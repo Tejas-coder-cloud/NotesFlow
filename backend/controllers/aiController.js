@@ -1,5 +1,6 @@
 const { GoogleGenAI } = require("@google/genai");
-
+const user =
+    require("../models/user");
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
@@ -8,10 +9,52 @@ const generateSummary = async (req, res) => {
     try {
 
         const { content } = req.body;
+        const user =
+            await User.findById(
+                req.user._id
+            );
+        const today =
+            new Date().toDateString();
+
+        const lastReset =
+            new Date(
+                user.lastReset
+            ).toDateString();
+
+        if (today !== lastReset) {
+
+            user.summaryCount = 0;
+
+            user.lastReset =
+                new Date();
+
+            await user.save();
+        }
+        const DAILY_LIMIT = 20;
+
+        if (
+            user.summaryCount >=
+            DAILY_LIMIT
+        ) {
+            return res.status(429).json({
+                message:
+                    "Daily summary limit reached"
+            });
+        }
 
         const prompt = `
-Summarize the following notes in concise bullet points:
+Summarize the following notes.
 
+Return plain text only.
+
+Rules:
+- Use bullet points
+- Do not use markdown
+- Do not use ** symbols
+- Do not use backticks
+- Keep it concise
+
+Notes:
 ${content}
 `;
 
@@ -19,6 +62,9 @@ ${content}
             model: "gemini-2.5-flash",
             contents: prompt
         });
+        user.summaryCount++;
+
+        await user.save();
 
         console.log("FULL RESPONSE:");
         console.log(response);

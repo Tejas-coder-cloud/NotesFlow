@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+     summaryCount:{
+        type:Number,
+        default:0
+    },
+    lastReset:{
+        type:Date,
+        default:Date.now
     }
 }, {
     timestamps: true
