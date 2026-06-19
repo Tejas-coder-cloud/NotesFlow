@@ -10,7 +10,7 @@ const generateSummary = async (req, res) => {
     const { content } = req.body;
     console.log("REQ USER:");
     console.log(req.user);
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
 
     if (!user) {
       return res.status(404).json({
