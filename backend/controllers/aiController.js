@@ -8,7 +8,8 @@ const ai = new GoogleGenAI({
 const generateSummary = async (req, res) => {
   try {
     const { content } = req.body;
-
+    console.log("REQ USER:");
+    console.log(req.user);
     const user = await User.findById(req.user._id);
 
     if (!user) {
