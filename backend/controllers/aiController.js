@@ -1,48 +1,47 @@
 const { GoogleGenAI } = require("@google/genai");
-const user =
-    require("../models/user");
+const User = require("../models/user");
+
 const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 const generateSummary = async (req, res) => {
-    try {
+  try {
+    const { content } = req.body;
 
-        const { content } = req.body;
-        const user =
-            await user.findById(
-                req.user._id
-            );
-        const today =
-            new Date().toDateString();
+    const user = await User.findById(req.user._id);
 
-        const lastReset =
-            new Date(
-                user.lastReset
-            ).toDateString();
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
 
-        if (today !== lastReset) {
+    // Reset summary count every day
+    const today = new Date().toDateString();
+    const lastReset = new Date(
+      user.lastReset
+    ).toDateString();
 
-            user.summaryCount = 0;
+    if (today !== lastReset) {
+      user.summaryCount = 0;
+      user.lastReset = new Date();
+      await user.save();
+    }
 
-            user.lastReset =
-                new Date();
+    // Daily limit
+    const DAILY_LIMIT = 20;
 
-            await user.save();
-        }
-        const DAILY_LIMIT = 20;
+    if (
+      user.summaryCount >= DAILY_LIMIT
+    ) {
+      return res.status(429).json({
+        message:
+          "Daily summary limit reached. Please try again tomorrow.",
+      });
+    }
 
-        if (
-            user.summaryCount >=
-            DAILY_LIMIT
-        ) {
-            return res.status(429).json({
-                message:
-                    "Daily summary limit reached"
-            });
-        }
-
-        const prompt = `
+    const prompt = `
 Summarize the following notes.
 
 Return plain text only.
@@ -58,32 +57,37 @@ Notes:
 ${content}
 `;
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt
-        });
-        user.summaryCount++;
+    const response =
+      await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+      });
 
-        await user.save();
+    user.summaryCount++;
+    await user.save();
 
-        console.log("FULL RESPONSE:");
-        console.log(response);
+    res.status(200).json({
+      summary: response.text,
+      summariesUsed:
+        user.summaryCount,
+      summariesRemaining:
+        DAILY_LIMIT -
+        user.summaryCount,
+    });
+  } catch (error) {
+    console.log(
+      "AI ERROR:"
+    );
+    console.log(error);
 
-        res.status(200).json({
-            summary: response.text
-        });
-
-    } catch (error) {
-
-        console.log("AI ERROR:");
-        console.log(error);
-
-        res.status(500).json({
-            message: "Failed to generate summary"
-        });
-    }
+    res.status(500).json({
+      message:
+        "Failed to generate summary",
+      error: error.message,
+    });
+  }
 };
 
 module.exports = {
-    generateSummary
+  generateSummary,
 };
