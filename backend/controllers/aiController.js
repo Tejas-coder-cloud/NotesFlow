@@ -10,7 +10,7 @@ const generateSummary = async (req, res) => {
 
         const { content } = req.body;
         const user =
-            await User.findById(
+            await user.findById(
                 req.user._id
             );
         const today =
