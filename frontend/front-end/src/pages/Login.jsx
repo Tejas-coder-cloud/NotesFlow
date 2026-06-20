@@ -26,16 +26,30 @@ function Login() {
       );
       navigate("/dashboard");
       console.log(response.data);
-      toast.success( `Welcome back ${user.name}!`);
+      toast.success("Login Successful");
     } catch (error) {
+
+      console.log(error);
+
       if (error.response?.status === 401) {
+
         toast.error(
           "Invalid Email or Password"
         );
-      } else {
+
+      } else if (error.response?.status === 404) {
+
         toast.error(
+          "User not found"
+        );
+
+      } else {
+
+        toast.error(
+          error.response?.data?.message ||
           "Something went wrong"
         );
+
       }
     }
   };
