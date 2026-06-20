@@ -10,6 +10,9 @@ function Dashboard() {
   const [content, setContent] = useState("");
   const [editId, setEditId] = useState(null);
   const [summaries, setSummaries] = useState({});
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
+  );
   const fetchNotes = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -113,16 +116,51 @@ function Dashboard() {
 
     } catch (error) {
       console.log(error);
-      toast.error("Failed to generate summary");
+      if (
+        error.response?.status === 429
+      ) {
+
+        toast.error(
+          "Daily summary limit reached"
+        );
+
+      } else {
+
+        toast.error(
+          "Failed to generate summary"
+        );
+      }
     }
   };
+  const toggleTheme = () => {
+
+    const newTheme = !darkMode;
+
+    setDarkMode(newTheme);
+
+    localStorage.setItem(
+      "theme",
+      newTheme ? "dark" : "light"
+    );
+  };
   return (
-    <div className="dashboard-page">
+    <div className={darkMode ? "dashboard-page dark" : "dashboard-page light"}>
       <div className="dashboard">
         <div className="dashboard-header">
           <h1 className="dashboard-title">
             NotesFlow Dashboard
           </h1>
+
+          <button
+            className="theme-btn"
+            onClick={toggleTheme}
+          >
+            {
+              darkMode
+                ? "☀️ Light"
+                : "🌙 Dark"
+            }
+          </button>
           <button
             className="logout-btn"
             onClick={() => {

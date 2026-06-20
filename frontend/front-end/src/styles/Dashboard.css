@@ -249,3 +249,42 @@
     max-height: 200px;
   }
 }
+.theme-btn {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+.light {
+  background: #f8fafc;
+}
+.light .note-card {
+  background: white;
+}
+.light .dashboard-title {
+  color: #0f172a;
+}
+.dark {
+  background: linear-gradient(
+      135deg,
+      #0f172a,
+      #111827,
+      #1e293b
+  );
+}
+.dark .dashboard-title {
+  color: white;
+}
+.dark .note-card {
+  background: #1e293b;
+  color: white;
+}
+.dark .note-card h3 {
+  color: white;
+}
+.dark .note-card p {
+  color: #cbd5e1;
+}
