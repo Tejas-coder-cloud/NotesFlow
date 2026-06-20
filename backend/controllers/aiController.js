@@ -66,6 +66,9 @@ ${content}
 
     user.summaryCount++;
     await user.save();
+    console.log(
+      `User ${user.email} has used ${user.summaryCount}/${DAILY_LIMIT} summaries today`
+    );
 
     res.status(200).json({
       summary: response.text,
