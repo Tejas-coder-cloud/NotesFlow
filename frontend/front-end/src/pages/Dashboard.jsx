@@ -11,6 +11,7 @@ function Dashboard() {
   const [content, setContent] = useState("");
   const [editId, setEditId] = useState(null);
   const [summaries, setSummaries] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
   const [summaryUsage, setSummaryUsage] = useState({
     used: 0,
     remaining: 20
@@ -100,6 +101,7 @@ function Dashboard() {
   };
   useEffect(() => {
     fetchNotes();
+    fetchUsage();
   }, []);
   const generateSummary = async (content) => {
     try {
@@ -124,41 +126,68 @@ function Dashboard() {
         used: response.data.summariesUsed,
         remaining: response.data.summariesRemaining
       });
-
     } catch (error) {
       console.log(error);
       if (
         error.response?.status === 429
       ) {
-
         toast.error(
           "Daily summary limit reached"
         );
-
       } else {
-
         toast.error(
           "Failed to generate summary"
         );
       }
     }
     finally {
-
       setLoadingSummary(null);
-
     }
   };
   const toggleTheme = () => {
-
     const newTheme = !darkMode;
-
     setDarkMode(newTheme);
-
     localStorage.setItem(
       "theme",
       newTheme ? "dark" : "light"
     );
   };
+  const fetchUsage = async () => {
+    try {
+      const token =
+        localStorage.getItem("token");
+      const response =
+        await axios.get(
+          "https://notesflow-backend-frui.onrender.com/api/ai/usage",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`
+            }
+          }
+        );
+      setSummaryUsage({
+        used: response.data.used,
+        remaining:
+          response.data.remaining
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const filteredNotes = notes.filter(
+    (note) =>
+      note.title
+        .toLowerCase()
+        .includes(
+          searchTerm.toLowerCase()
+        ) ||
+      note.content
+        .toLowerCase()
+        .includes(
+          searchTerm.toLowerCase()
+        )
+  );
   return (
     <div className={darkMode ? "dashboard-page dark" : "dashboard-page light"}>
       <div className="dashboard">
@@ -233,9 +262,18 @@ function Dashboard() {
           </button>
         </div>
         <div className="notes-section">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="🔍 Search notes..."
+            value={searchTerm}
+            onChange={(e) =>
+              setSearchTerm(e.target.value)
+            }
+          />
           <h2>Your Notes</h2>
           {
-            notes.map((note) => (
+            filteredNotes.map((note) => (
               <div
                 key={note._id}
                 className="note-card"
