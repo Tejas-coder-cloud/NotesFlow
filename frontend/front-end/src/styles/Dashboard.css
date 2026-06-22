@@ -316,3 +316,47 @@
 
   color: #cbd5e1;
 }
+.spinner {
+
+  width: 18px;
+
+  height: 18px;
+
+  border: 3px solid
+    rgba(255,255,255,0.3);
+
+  border-top: 3px solid white;
+
+  border-radius: 50%;
+
+  animation: spin 1s linear infinite;
+
+  display: inline-block;
+
+  margin-right: 8px;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.usage-card {
+  margin-top: 10px;
+  display: inline-flex;
+  gap: 15px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.light .usage-card {
+  background: #e0f2fe;
+  color: #0f172a;
+}
+.dark .usage-card {
+  background: #1e293b;
+  color: white;
+}

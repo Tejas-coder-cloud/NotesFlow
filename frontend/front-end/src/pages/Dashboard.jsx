@@ -5,11 +5,18 @@ import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 function Dashboard() {
   const navigate = useNavigate();
+
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [editId, setEditId] = useState(null);
   const [summaries, setSummaries] = useState({});
+  const [summaryUsage, setSummaryUsage] = useState({
+    used: 0,
+    remaining: 20
+  });
+  const [loadingSummary, setLoadingSummary] =
+    useState(null);
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
@@ -113,6 +120,10 @@ function Dashboard() {
         ...prev,
         [content]: response.data.summary
       }));
+      setSummaryUsage({
+        used: response.data.summariesUsed,
+        remaining: response.data.summariesRemaining
+      });
 
     } catch (error) {
       console.log(error);
@@ -130,6 +141,11 @@ function Dashboard() {
           "Failed to generate summary"
         );
       }
+    }
+    finally {
+
+      setLoadingSummary(null);
+
     }
   };
   const toggleTheme = () => {
@@ -150,6 +166,15 @@ function Dashboard() {
           <h1 className="dashboard-title">
             NotesFlow Dashboard
           </h1>
+          <div className="usage-card">
+            <span>
+              AI Usage: {summaryUsage.used}/20
+            </span>
+
+            <span>
+              Remaining: {summaryUsage.remaining}
+            </span>
+          </div>
 
           <button
             className="theme-btn"
@@ -238,25 +263,39 @@ function Dashboard() {
                 </button>
                 <button
                   className="primary-btn"
+                  disabled={
+                    loadingSummary === note.content
+                  }
                   onClick={() =>
                     generateSummary(
                       note.content
                     )
                   }
                 >
-                  Generate Summary
+                  {
+                    loadingSummary === note.content
+                      ? (
+                        <>
+                          <span className="spinner"></span>
+                          Generating...
+                        </>
+                      )
+                      : (
+                        "Generate Summary"
+                      )
+                  }
                 </button>
-               {
-  summaries[note.content] && (
-    <div className="summary-box">
-      <h4>🤖 AI Summary</h4>
+                {
+                  summaries[note.content] && (
+                    <div className="summary-box">
+                      <h4>🤖 AI Summary</h4>
 
-      <p>
-        {summaries[note.content]}
-      </p>
-    </div>
-  )
-}
+                      <p>
+                        {summaries[note.content]}
+                      </p>
+                    </div>
+                  )
+                }
               </div>
             ))
           }
