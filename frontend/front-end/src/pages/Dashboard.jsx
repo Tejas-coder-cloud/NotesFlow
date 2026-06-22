@@ -246,32 +246,17 @@ function Dashboard() {
                 >
                   Generate Summary
                 </button>
-                {
-                  summaries[note.content] && (
-                    <div
-                      style={{
-                        marginTop: "10px",
-                        padding: "10px",
-                        border:
-                          "1px solid #ccc",
-                        borderRadius: "5px",
-                        backgroundColor:
-                          "#f8f8f8"
-                      }}
-                    >
-                      <h4>
-                        AI Summary
-                      </h4>
-                      <p>
-                        {
-                          summaries[
-                          note.content
-                          ]
-                        }
-                      </p>
-                    </div>
-                  )
-                }
+               {
+  summaries[note.content] && (
+    <div className="summary-box">
+      <h4>🤖 AI Summary</h4>
+
+      <p>
+        {summaries[note.content]}
+      </p>
+    </div>
+  )
+}
               </div>
             ))
           }

@@ -288,3 +288,31 @@
 .dark .note-card p {
   color: #cbd5e1;
 }
+.summary-box {
+
+  margin-top: 15px;
+
+  padding: 15px;
+
+  border-radius: 12px;
+
+  transition: all 0.3s ease;
+}
+.light .summary-box {
+  background: #f8fafc;
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+.dark .summary-box {
+  background: #111827;
+  border: 1px solid #334155;
+  color: white;
+}
+.dark .summary-box h4 {
+
+  color: white;
+}
+.dark .summary-box p {
+
+  color: #cbd5e1;
+}
