@@ -274,7 +274,6 @@ function Dashboard() {
               }
             />
           </div>
-          <h2>Your Notes</h2>
           {
             filteredNotes.map((note) => (
               <div
