@@ -304,23 +304,14 @@
   color: #cbd5e1;
 }
 .spinner {
-
-  width: 18px;
-
-  height: 18px;
-
-  border: 3px solid
-    rgba(255,255,255,0.3);
-
-  border-top: 3px solid white;
-
-  border-radius: 50%;
-
-  animation: spin 1s linear infinite;
-
   display: inline-block;
-
+  width: 14px;
+  height: 14px;
   margin-right: 8px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 @keyframes spin {
   from {
@@ -329,6 +320,10 @@
   to {
     transform: rotate(360deg);
   }
+}
+.primary-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
 }
 .usage-card {
   margin-top: 10px;

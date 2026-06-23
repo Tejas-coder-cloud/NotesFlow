@@ -5,7 +5,7 @@ import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
 function Dashboard() {
   const navigate = useNavigate();
-
+  const [loadingSummary, setLoadingSummary] = useState({});
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -16,8 +16,6 @@ function Dashboard() {
     used: 0,
     remaining: 20
   });
-  const [loadingSummary, setLoadingSummary] =
-    useState(null);
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
@@ -105,27 +103,31 @@ function Dashboard() {
   }, []);
   const generateSummary = async (content) => {
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await axios.post(
-        "https://notesflow-backend-frui.onrender.com/api/ai/summary",
-        {
-          content
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
+      setLoadingSummary((prev) => ({
+        ...prev,
+        [content]: true
+      }));
+      const token =
+        localStorage.getItem("token");
+      const response =
+        await axios.post(
+          "https://notesflow-backend-frui.onrender.com/api/ai/summary",
+          {
+            content
+          },
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`
+            }
           }
-        }
-      );
+        );
       setSummaries((prev) => ({
         ...prev,
-        [content]: response.data.summary
+        [content]:
+          response.data.summary
       }));
-      setSummaryUsage({
-        used: response.data.summariesUsed,
-        remaining: response.data.summariesRemaining
-      });
+      fetchUsage();
     } catch (error) {
       console.log(error);
       if (
@@ -139,9 +141,11 @@ function Dashboard() {
           "Failed to generate summary"
         );
       }
-    }
-    finally {
-      setLoadingSummary(null);
+    } finally {
+      setLoadingSummary((prev) => ({
+        ...prev,
+        [content]: false
+      }));
     }
   };
   const toggleTheme = () => {
@@ -304,7 +308,7 @@ function Dashboard() {
                 <button
                   className="primary-btn"
                   disabled={
-                    loadingSummary === note.content
+                    loadingSummary[note.content]
                   }
                   onClick={() =>
                     generateSummary(
@@ -313,7 +317,7 @@ function Dashboard() {
                   }
                 >
                   {
-                    loadingSummary === note.content
+                    loadingSummary[note.content]
                       ? (
                         <>
                           <span className="spinner"></span>
