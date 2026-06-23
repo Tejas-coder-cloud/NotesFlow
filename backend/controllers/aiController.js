@@ -1,38 +1,31 @@
 const { GoogleGenAI } = require("@google/genai");
 const User = require("../models/user");
-
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
-
 const generateSummary = async (req, res) => {
   try {
     const { content } = req.body;
     console.log("REQ USER:");
     console.log(req.user);
     const user = await User.findById(req.user.id);
-
     if (!user) {
       return res.status(404).json({
         message: "User not found",
       });
     }
-
     // Reset summary count every day
     const today = new Date().toDateString();
     const lastReset = new Date(
       user.lastReset
     ).toDateString();
-
     if (today !== lastReset) {
       user.summaryCount = 0;
       user.lastReset = new Date();
       await user.save();
     }
-
     // Daily limit
     const DAILY_LIMIT = 20;
-
     if (
       user.summaryCount >= DAILY_LIMIT
     ) {
@@ -41,7 +34,6 @@ const generateSummary = async (req, res) => {
           "Daily summary limit reached. Please try again tomorrow.",
       });
     }
-
     const prompt = `
 Summarize the following notes.
 
@@ -57,19 +49,16 @@ Rules:
 Notes:
 ${content}
 `;
-
     const response =
       await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
       });
-
     user.summaryCount++;
     await user.save();
     console.log(
       `User ${user.email} has used ${user.summaryCount}/${DAILY_LIMIT} summaries today`
     );
-
     res.status(200).json({
       summary: response.text,
       summariesUsed:
@@ -83,7 +72,6 @@ ${content}
       "AI ERROR:"
     );
     console.log(error);
-
     res.status(500).json({
       message:
         "Failed to generate summary",
@@ -91,7 +79,46 @@ ${content}
     });
   }
 };
+const getUsage = async (req, res) => {
+  try {
+    const user = await User.findById(
+      req.user.id
+    );
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
 
+    }
+    const today =
+      new Date().toDateString();
+    const lastReset =
+      new Date(
+        user.lastReset
+      ).toDateString();
+    if (today !== lastReset) {
+      user.summaryCount = 0;
+      user.lastReset =
+        new Date();
+      await user.save();
+    }
+    const DAILY_LIMIT = 20;
+    res.status(200).json({
+      used:
+        user.summaryCount,
+      remaining:
+        DAILY_LIMIT -
+        user.summaryCount
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message:
+        "Failed to fetch usage"
+    });
+  }
+};
 module.exports = {
   generateSummary,
+  getUsage
 };
