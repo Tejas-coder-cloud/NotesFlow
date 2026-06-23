@@ -262,15 +262,18 @@ function Dashboard() {
           </button>
         </div>
         <div className="notes-section">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="🔍 Search notes..."
-            value={searchTerm}
-            onChange={(e) =>
-              setSearchTerm(e.target.value)
-            }
-          />
+          <div className="notes-header">
+            <h2>Your Notes</h2>
+            <input
+              className="search-input"
+              type="text"
+              placeholder="🔍 Search notes..."
+              value={searchTerm}
+              onChange={(e) =>
+                setSearchTerm(e.target.value)
+              }
+            />
+          </div>
           <h2>Your Notes</h2>
           {
             filteredNotes.map((note) => (
