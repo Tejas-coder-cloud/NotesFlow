@@ -201,7 +201,7 @@
   padding: 10px 18px;
   border-radius: 8px;
   margin-right: 10px;
-  cursor: pointer;
+   cursor: pointer;
   transition: 0.3s;
 }
 
@@ -228,7 +228,8 @@
   line-height: 1.6;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) 
+{
 
   .dashboard-page {
     padding: 20px 10px;
@@ -290,6 +291,9 @@
   .summary-box {
     max-height: 200px;
   }
+  .header-actions {
+  justify-content: center;
+}
 }
 .theme-btn {
   background: #6366f1;
@@ -423,4 +427,8 @@
   .search-input{
       width:100%;
   }
+
+  .header-actions {
+  justify-content: center;
+}
 }
