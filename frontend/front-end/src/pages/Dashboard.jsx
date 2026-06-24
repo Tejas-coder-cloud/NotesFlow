@@ -199,7 +199,9 @@ function Dashboard() {
           <h1 className="dashboard-title">
             NotesFlow Dashboard
           </h1>
+           <div className="header-actions">
           <div className="usage-card">
+            </div>
             <span>
               AI Usage: {summaryUsage.used}/20
             </span>

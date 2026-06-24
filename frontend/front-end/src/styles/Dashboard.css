@@ -16,15 +16,23 @@
 }
 
 .dashboard {
-  width: 85%;
-  max-width: 1200px;
+  width: min(1200px, 95%);
   margin: auto;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
   margin-bottom: 40px;
 }
 
