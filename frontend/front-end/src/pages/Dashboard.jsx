@@ -268,7 +268,7 @@ function Dashboard() {
               className="export-btn"
               onClick={exportPDF}
             >
-              📄 Export PDF
+              📄 Export Notes as pdf 
             </button>
 
             <button
