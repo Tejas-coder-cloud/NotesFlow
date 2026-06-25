@@ -13,6 +13,8 @@ function Dashboard() {
   const [editId, setEditId] = useState(null);
   const [summaries, setSummaries] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState(null);
   const [summaryUsage, setSummaryUsage] = useState({
     used: 0,
     remaining: 20
@@ -258,17 +260,14 @@ function Dashboard() {
               className="theme-btn"
               onClick={toggleTheme}
             >
-              {
-                darkMode
-                  ? "☀️ Light"
-                  : "🌙 Dark"
-              }
+              {darkMode ? "☀️ Light" : "🌙 Dark"}
             </button>
+
             <button
               className="export-btn"
               onClick={exportPDF}
             >
-              📄 Export Notes as pdf 
+              📄 Export Notes as PDF
             </button>
 
             <button
@@ -282,16 +281,13 @@ function Dashboard() {
             </button>
 
           </div>
+
         </div>
 
         <div className="note-form">
 
           <h2>
-            {
-              editId
-                ? "Update Note"
-                : "Create Note"
-            }
+            {editId ? "Update Note" : "Create Note"}
           </h2>
 
           <input
@@ -319,11 +315,7 @@ function Dashboard() {
                 : createNote
             }
           >
-            {
-              editId
-                ? "Update Note"
-                : "Create Note"
-            }
+            {editId ? "Update Note" : "Create Note"}
           </button>
 
         </div>
@@ -340,15 +332,14 @@ function Dashboard() {
               placeholder="🔍 Search notes..."
               value={searchTerm}
               onChange={(e) =>
-                setSearchTerm(
-                  e.target.value
-                )
+                setSearchTerm(e.target.value)
               }
             />
 
           </div>
 
           {filteredNotes.map((note) => (
+
             <div
               key={note._id}
               className="note-card"
@@ -371,9 +362,10 @@ function Dashboard() {
 
               <button
                 className="delete-btn"
-                onClick={() =>
-                  deleteNote(note._id)
-                }
+                onClick={() => {
+                  setNoteToDelete(note._id);
+                  setShowDeleteModal(true);
+                }}
               >
                 Delete
               </button>
@@ -384,9 +376,7 @@ function Dashboard() {
                   loadingSummary[note.content]
                 }
                 onClick={() =>
-                  generateSummary(
-                    note.content
-                  )
+                  generateSummary(note.content)
                 }
               >
                 {
@@ -397,36 +387,96 @@ function Dashboard() {
                         Generating...
                       </>
                     )
-                    : (
-                      "Generate Summary"
-                    )
+                    : "Generate Summary"
                 }
               </button>
 
-              {
-                summaries[note.content] && (
-                  <div className="summary-box">
+              {summaries[note.content] && (
+
+                <div className="summary-box">
+
+                  <div className="summary-header">
 
                     <h4>
                       🤖 AI Summary
                     </h4>
 
-                    <p>
-                      {
-                        summaries[
-                        note.content
-                        ]
-                      }
-                    </p>
+                    <button
+                      className="copy-btn"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          summaries[note.content]
+                        );
+
+                        toast.success(
+                          "Summary copied!"
+                        );
+                      }}
+                    >
+                      📋 Copy
+                    </button>
 
                   </div>
-                )
-              }
+
+                  <p>
+                    {summaries[note.content]}
+                  </p>
+
+                </div>
+
+              )}
 
             </div>
+
           ))}
 
         </div>
+
+        {showDeleteModal && (
+
+          <div className="modal-overlay">
+
+            <div className="delete-modal">
+
+              <h2>
+                Delete Note?
+              </h2>
+
+              <p>
+                This action cannot be undone.
+              </p>
+
+              <div className="modal-buttons">
+
+                <button
+                  className="cancel-btn"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setNoteToDelete(null);
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="confirm-delete-btn"
+                  onClick={() => {
+                    deleteNote(noteToDelete);
+                    setShowDeleteModal(false);
+                    setNoteToDelete(null);
+                    toast.success("Note deleted");
+                  }}
+                >
+                  Delete
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
 
       </div>
     </div>
