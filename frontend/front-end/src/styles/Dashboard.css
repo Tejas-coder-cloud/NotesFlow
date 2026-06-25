@@ -432,3 +432,16 @@
   justify-content: center;
 }
 }
+.export-btn{
+    background:#10b981;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:0.3s;
+}
+.export-btn:hover{
+    background:#059669;
+    transform:translateY(-2px);
+}

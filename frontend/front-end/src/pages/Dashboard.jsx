@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { jsPDF } from "jspdf";
 import axios from "axios";
 import "../styles/Dashboard.css";
 import { useNavigate } from "react-router-dom";
@@ -192,204 +193,243 @@ function Dashboard() {
           searchTerm.toLowerCase()
         )
   );
- return (
-  <div
-    className={
-      darkMode
-        ? "dashboard-page dark"
-        : "dashboard-page light"
-    }
-  >
-    <div className="dashboard">
+  const exportPDF = () => {
+    const doc = new jsPDF();
 
-      <div className="dashboard-header">
+    doc.setFontSize(20);
+    doc.text("NotesFlow Notes", 20, 20);
 
-        <h1 className="dashboard-title">
-          NotesFlow Dashboard
-        </h1>
+    let y = 35;
 
-        <div className="header-actions">
+    filteredNotes.forEach((note, index) => {
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
 
-          <div className="usage-card">
-            <span>
-              AI Usage: {summaryUsage.used}/20
-            </span>
+      doc.setFontSize(15);
+      doc.text(`${index + 1}. ${note.title}`, 20, y);
 
-            <span>
-              Remaining: {summaryUsage.remaining}
-            </span>
+      y += 8;
+
+      doc.setFontSize(11);
+
+      const lines = doc.splitTextToSize(
+        note.content,
+        170
+      );
+
+      doc.text(lines, 20, y);
+
+      y += lines.length * 6 + 10;
+    });
+
+    doc.save("NotesFlow_Notes.pdf");
+  };
+  return (
+    <div
+      className={
+        darkMode
+          ? "dashboard-page dark"
+          : "dashboard-page light"
+      }
+    >
+      <div className="dashboard">
+
+        <div className="dashboard-header">
+
+          <h1 className="dashboard-title">
+            NotesFlow Dashboard
+          </h1>
+
+          <div className="header-actions">
+
+            <div className="usage-card">
+              <span>
+                AI Usage: {summaryUsage.used}/20
+              </span>
+
+              <span>
+                Remaining: {summaryUsage.remaining}
+              </span>
+            </div>
+
+            <button
+              className="theme-btn"
+              onClick={toggleTheme}
+            >
+              {
+                darkMode
+                  ? "☀️ Light"
+                  : "🌙 Dark"
+              }
+            </button>
+            <button
+              className="export-btn"
+              onClick={exportPDF}
+            >
+              📄 Export PDF
+            </button>
+
+            <button
+              className="logout-btn"
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate("/");
+              }}
+            >
+              Logout
+            </button>
+
           </div>
-
-          <button
-            className="theme-btn"
-            onClick={toggleTheme}
-          >
-            {
-              darkMode
-                ? "☀️ Light"
-                : "🌙 Dark"
-            }
-          </button>
-
-          <button
-            className="logout-btn"
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/");
-            }}
-          >
-            Logout
-          </button>
-
         </div>
-      </div>
 
-      <div className="note-form">
+        <div className="note-form">
 
-        <h2>
-          {
-            editId
-              ? "Update Note"
-              : "Create Note"
-          }
-        </h2>
-
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) =>
-            setTitle(e.target.value)
-          }
-        />
-
-        <textarea
-          placeholder="Content"
-          value={content}
-          onChange={(e) =>
-            setContent(e.target.value)
-          }
-        />
-
-        <button
-          className="primary-btn"
-          onClick={
-            editId
-              ? updateNote
-              : createNote
-          }
-        >
-          {
-            editId
-              ? "Update Note"
-              : "Create Note"
-          }
-        </button>
-
-      </div>
-
-      <div className="notes-section">
-
-        <div className="notes-header">
-
-          <h2>Your Notes</h2>
+          <h2>
+            {
+              editId
+                ? "Update Note"
+                : "Create Note"
+            }
+          </h2>
 
           <input
-            className="search-input"
             type="text"
-            placeholder="🔍 Search notes..."
-            value={searchTerm}
+            placeholder="Title"
+            value={title}
             onChange={(e) =>
-              setSearchTerm(
-                e.target.value
-              )
+              setTitle(e.target.value)
             }
           />
 
+          <textarea
+            placeholder="Content"
+            value={content}
+            onChange={(e) =>
+              setContent(e.target.value)
+            }
+          />
+
+          <button
+            className="primary-btn"
+            onClick={
+              editId
+                ? updateNote
+                : createNote
+            }
+          >
+            {
+              editId
+                ? "Update Note"
+                : "Create Note"
+            }
+          </button>
+
         </div>
 
-        {filteredNotes.map((note) => (
-          <div
-            key={note._id}
-            className="note-card"
-          >
+        <div className="notes-section">
 
-            <h3>{note.title}</h3>
+          <div className="notes-header">
 
-            <p>{note.content}</p>
+            <h2>Your Notes</h2>
 
-            <button
-              className="edit-btn"
-              onClick={() => {
-                setTitle(note.title);
-                setContent(note.content);
-                setEditId(note._id);
-              }}
-            >
-              Edit
-            </button>
-
-            <button
-              className="delete-btn"
-              onClick={() =>
-                deleteNote(note._id)
-              }
-            >
-              Delete
-            </button>
-
-            <button
-              className="primary-btn"
-              disabled={
-                loadingSummary[note.content]
-              }
-              onClick={() =>
-                generateSummary(
-                  note.content
+            <input
+              className="search-input"
+              type="text"
+              placeholder="🔍 Search notes..."
+              value={searchTerm}
+              onChange={(e) =>
+                setSearchTerm(
+                  e.target.value
                 )
               }
-            >
-              {
-                loadingSummary[note.content]
-                  ? (
-                    <>
-                      <span className="spinner"></span>
-                      Generating...
-                    </>
-                  )
-                  : (
-                    "Generate Summary"
-                  )
-              }
-            </button>
-
-            {
-              summaries[note.content] && (
-                <div className="summary-box">
-
-                  <h4>
-                    🤖 AI Summary
-                  </h4>
-
-                  <p>
-                    {
-                      summaries[
-                        note.content
-                      ]
-                    }
-                  </p>
-
-                </div>
-              )
-            }
+            />
 
           </div>
-        ))}
+
+          {filteredNotes.map((note) => (
+            <div
+              key={note._id}
+              className="note-card"
+            >
+
+              <h3>{note.title}</h3>
+
+              <p>{note.content}</p>
+
+              <button
+                className="edit-btn"
+                onClick={() => {
+                  setTitle(note.title);
+                  setContent(note.content);
+                  setEditId(note._id);
+                }}
+              >
+                Edit
+              </button>
+
+              <button
+                className="delete-btn"
+                onClick={() =>
+                  deleteNote(note._id)
+                }
+              >
+                Delete
+              </button>
+
+              <button
+                className="primary-btn"
+                disabled={
+                  loadingSummary[note.content]
+                }
+                onClick={() =>
+                  generateSummary(
+                    note.content
+                  )
+                }
+              >
+                {
+                  loadingSummary[note.content]
+                    ? (
+                      <>
+                        <span className="spinner"></span>
+                        Generating...
+                      </>
+                    )
+                    : (
+                      "Generate Summary"
+                    )
+                }
+              </button>
+
+              {
+                summaries[note.content] && (
+                  <div className="summary-box">
+
+                    <h4>
+                      🤖 AI Summary
+                    </h4>
+
+                    <p>
+                      {
+                        summaries[
+                        note.content
+                        ]
+                      }
+                    </p>
+
+                  </div>
+                )
+              }
+
+            </div>
+          ))}
+
+        </div>
 
       </div>
-
     </div>
-  </div>
-);
+  );
 }
 export default Dashboard;
