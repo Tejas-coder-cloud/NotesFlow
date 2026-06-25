@@ -471,3 +471,169 @@
     background:#059669;
     transform:translateY(-2px);
 }
+/* ===========================
+   DELETE CONFIRMATION MODAL
+=========================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+
+  animation: fadeIn 0.25s ease;
+}
+
+.delete-modal {
+  width: 90%;
+  max-width: 420px;
+
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 30px;
+
+  text-align: center;
+
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+
+  animation: popup 0.3s ease;
+}
+
+.delete-modal h2 {
+  margin-bottom: 15px;
+  color: #0f172a;
+}
+
+.delete-modal p {
+  color: #64748b;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.cancel-btn {
+  background: #cbd5e1;
+
+  color: #0f172a;
+
+  border: none;
+
+  padding: 12px 22px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #94a3b8;
+}
+
+.confirm-delete-btn {
+  background: #ef4444;
+
+  color: white;
+
+  border: none;
+
+  padding: 12px 22px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.confirm-delete-btn:hover {
+  background: #dc2626;
+
+  transform: translateY(-2px);
+}
+
+/* ===========================
+   DARK MODE
+=========================== */
+
+.dark .delete-modal {
+  background: #1e293b;
+}
+
+.dark .delete-modal h2 {
+  color: white;
+}
+
+.dark .delete-modal p {
+  color: #cbd5e1;
+}
+
+.dark .cancel-btn {
+  background: #334155;
+  color: white;
+}
+
+.dark .cancel-btn:hover {
+  background: #475569;
+}
+
+/* ===========================
+   ANIMATIONS
+=========================== */
+
+@keyframes popup {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width:768px){
+  .delete-modal{
+    width:95%;
+    padding:25px;
+  }
+  .modal-buttons{
+    flex-direction:column;
+  }
+  .cancel-btn,
+  .confirm-delete-btn{
+    width:100%;
+  }
+}
