@@ -229,210 +229,255 @@ function Dashboard() {
     doc.save("NotesFlow_Notes.pdf");
   };
   return (
-    <div
-      className={
-        darkMode
-          ? "dashboard-page dark"
-          : "dashboard-page light"
-      }
-    >
-      <div className="dashboard">
+  <div
+    className={
+      darkMode
+        ? "dashboard-page dark"
+        : "dashboard-page light"
+    }
+  >
+    <div className="dashboard">
 
-        <div className="dashboard-header">
+      <div className="dashboard-header">
 
-          <h1 className="dashboard-title">
-            NotesFlow Dashboard
-          </h1>
+        <h1 className="dashboard-title">
+          NotesFlow Dashboard
+        </h1>
 
-          <div className="header-actions">
+        <div className="header-actions">
 
-            <div className="usage-card">
-              <span>
-                AI Usage: {summaryUsage.used}/20
-              </span>
+          <div className="usage-card">
+            <span>
+              AI Usage: {summaryUsage.used}/20
+            </span>
 
-              <span>
-                Remaining: {summaryUsage.remaining}
-              </span>
-            </div>
-
-            <button
-              className="theme-btn"
-              onClick={toggleTheme}
-            >
-              {darkMode ? "☀️ Light" : "🌙 Dark"}
-            </button>
-
-            <button
-              className="export-btn"
-              onClick={exportPDF}
-            >
-              📄 Export Notes as PDF
-            </button>
-
-            <button
-              className="logout-btn"
-              onClick={() => {
-                localStorage.removeItem("token");
-                navigate("/");
-              }}
-            >
-              Logout
-            </button>
-
+            <span>
+              Remaining: {summaryUsage.remaining}
+            </span>
           </div>
 
-        </div>
-
-        <div className="note-form">
-
-          <h2>
-            {editId ? "Update Note" : "Create Note"}
-          </h2>
-
-          <input
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) =>
-              setTitle(e.target.value)
+          <button
+            className="theme-btn"
+            onClick={toggleTheme}
+          >
+            {
+              darkMode
+                ? "☀️ Light"
+                : "🌙 Dark"
             }
-          />
-
-          <textarea
-            placeholder="Content"
-            value={content}
-            onChange={(e) =>
-              setContent(e.target.value)
-            }
-          />
+          </button>
 
           <button
-            className="primary-btn"
-            onClick={
-              editId
-                ? updateNote
-                : createNote
-            }
+            className="export-btn"
+            onClick={exportPDF}
           >
-            {editId ? "Update Note" : "Create Note"}
+            📄 Export Notes as PDF
+          </button>
+
+          <button
+            className="logout-btn"
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/");
+            }}
+          >
+            Logout
           </button>
 
         </div>
 
-        <div className="notes-section">
+      </div>
 
-          <div className="notes-header">
+      <div className="note-form">
 
-            <h2>Your Notes</h2>
+        <h2>
+          {
+            editId
+              ? "Update Note"
+              : "Create Note"
+          }
+        </h2>
 
-            <input
-              className="search-input"
-              type="text"
-              placeholder="🔍 Search notes..."
-              value={searchTerm}
-              onChange={(e) =>
-                setSearchTerm(e.target.value)
-              }
-            />
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) =>
+            setTitle(e.target.value)
+          }
+        />
 
-          </div>
+        <textarea
+          placeholder="Content"
+          value={content}
+          onChange={(e) =>
+            setContent(e.target.value)
+          }
+        />
 
-          {filteredNotes.map((note) => (
+        <button
+          className="primary-btn"
+          onClick={
+            editId
+              ? updateNote
+              : createNote
+          }
+        >
+          {
+            editId
+              ? "Update Note"
+              : "Create Note"
+          }
+        </button>
 
-            <div
-              key={note._id}
-              className="note-card"
-            >
+      </div>
 
-              <h3>{note.title}</h3>
+      <div className="notes-section">
 
-              <p>{note.content}</p>
+        <div className="notes-header">
 
-              <button
-                className="edit-btn"
-                onClick={() => {
-                  setTitle(note.title);
-                  setContent(note.content);
-                  setEditId(note._id);
-                }}
-              >
-                Edit
-              </button>
+          <h2>Your Notes</h2>
 
-              <button
-                className="delete-btn"
-                onClick={() => {
-                  setNoteToDelete(note._id);
-                  setShowDeleteModal(true);
-                }}
-              >
-                Delete
-              </button>
-
-              <button
-                className="primary-btn"
-                disabled={
-                  loadingSummary[note.content]
-                }
-                onClick={() =>
-                  generateSummary(note.content)
-                }
-              >
-                {
-                  loadingSummary[note.content]
-                    ? (
-                      <>
-                        <span className="spinner"></span>
-                        Generating...
-                      </>
-                    )
-                    : "Generate Summary"
-                }
-              </button>
-
-              {summaries[note.content] && (
-
-                <div className="summary-box">
-
-                  <div className="summary-header">
-
-                    <h4>
-                      🤖 AI Summary
-                    </h4>
-
-                    <button
-                      className="copy-btn"
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          summaries[note.content]
-                        );
-
-                        toast.success(
-                          "Summary copied!"
-                        );
-                      }}
-                    >
-                      📋 Copy
-                    </button>
-
-                  </div>
-
-                  <p>
-                    {summaries[note.content]}
-                  </p>
-
-                </div>
-
-              )}
-
-            </div>
-
-          ))}
+          <input
+            className="search-input"
+            type="text"
+            placeholder="🔍 Search notes..."
+            value={searchTerm}
+            onChange={(e) =>
+              setSearchTerm(
+                e.target.value
+              )
+            }
+          />
 
         </div>
 
-        {showDeleteModal && (
+        {
+          filteredNotes.length > 0 ? (
+
+            filteredNotes.map((note) => (
+
+              <div
+                key={note._id}
+                className="note-card"
+              >
+
+                <h3>{note.title}</h3>
+
+                <p>{note.content}</p>
+
+                <button
+                  className="edit-btn"
+                  onClick={() => {
+                    setTitle(note.title);
+                    setContent(note.content);
+                    setEditId(note._id);
+                  }}
+                >
+                  Edit
+                </button>
+
+                <button
+                  className="delete-btn"
+                  onClick={() => {
+                    setNoteToDelete(note._id);
+                    setShowDeleteModal(true);
+                  }}
+                >
+                  Delete
+                </button>
+
+                <button
+                  className="primary-btn"
+                  disabled={
+                    loadingSummary[note.content]
+                  }
+                  onClick={() =>
+                    generateSummary(
+                      note.content
+                    )
+                  }
+                >
+                  {
+                    loadingSummary[note.content]
+                      ? (
+                        <>
+                          <span className="spinner"></span>
+                          Generating...
+                        </>
+                      )
+                      : (
+                        "Generate Summary"
+                      )
+                  }
+                </button>
+
+                {
+                  summaries[note.content] && (
+
+                    <div className="summary-box">
+
+                      <div className="summary-header">
+
+                        <h4>
+                          🤖 AI Summary
+                        </h4>
+
+                        <button
+                          className="copy-btn"
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              summaries[note.content]
+                            );
+
+                            toast.success(
+                              "Summary copied!"
+                            );
+                          }}
+                        >
+                          📋 Copy
+                        </button>
+
+                      </div>
+
+                      <p>
+                        {
+                          summaries[
+                            note.content
+                          ]
+                        }
+                      </p>
+
+                    </div>
+
+                  )
+                }
+
+              </div>
+
+            ))
+
+          ) : (
+
+            <div className="no-notes">
+
+              <h3>
+                🔍 No Notes Found
+              </h3>
+
+              <p>
+                No notes matched "{searchTerm}"
+              </p>
+
+            </div>
+
+          )
+        }
+
+      </div>
+
+      {
+        showDeleteModal && (
 
           <div className="modal-overlay">
 
@@ -476,10 +521,11 @@ function Dashboard() {
 
           </div>
 
-        )}
+        )
+      }
 
-      </div>
     </div>
-  );
+  </div>
+);
 }
 export default Dashboard;
