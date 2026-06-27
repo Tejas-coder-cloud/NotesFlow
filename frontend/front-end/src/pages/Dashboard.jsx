@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import QuizModal from "../components/QuizModal";
 import toast from "react-hot-toast";
 import { jsPDF } from "jspdf";
 import axios from "axios";
@@ -25,6 +26,11 @@ function Dashboard() {
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
+  const [currentQuiz, setCurrentQuiz] =
+  useState(null);
+
+const [showQuizModal, setShowQuizModal] =
+  useState(false);
   const fetchNotes = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -233,442 +239,417 @@ function Dashboard() {
   };
   const generateQuiz = async (content) => {
 
-  try {
+    try {
 
-    setLoadingQuiz((prev) => ({
-      ...prev,
-      [content]: true,
-    }));
+      setLoadingQuiz((prev) => ({
+        ...prev,
+        [content]: true,
+      }));
 
-    const token =
-      localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token");
 
-    const response =
-      await axios.post(
-        "https://notesflow-backend-frui.onrender.com/api/ai/quiz",
-        {
-          content,
-        },
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
+      const response =
+        await axios.post(
+          "https://notesflow-backend-frui.onrender.com/api/ai/quiz",
+          {
+            content,
           },
-        }
-      );
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
 
-    setQuizzes((prev) => ({
-      ...prev,
-      [content]: response.data.quiz,
-    }));
+      setCurrentQuiz(response.data.quiz);
 
-    fetchUsage();
+setShowQuizModal(true);
 
-  } catch (error) {
 
-    if (
-      error.response?.status === 429
-    ) {
-      toast.error(
-        "Daily AI limit reached"
-      );
-    } else {
-      toast.error(
-        "Failed to generate quiz"
-      );
+      fetchUsage();
+
+    } catch (error) {
+
+      if (
+        error.response?.status === 429
+      ) {
+        toast.error(
+          "Daily AI limit reached"
+        );
+      } else {
+        toast.error(
+          "Failed to generate quiz"
+        );
+      }
+
+    } finally {
+
+      setLoadingQuiz((prev) => ({
+        ...prev,
+        [content]: false,
+      }));
+
     }
 
-  } finally {
-
-    setLoadingQuiz((prev) => ({
-      ...prev,
-      [content]: false,
-    }));
-
-  }
-
-};
+  };
   return (
-  <div
-    className={
-      darkMode
-        ? "dashboard-page dark"
-        : "dashboard-page light"
-    }
-  >
-    <div className="dashboard">
+    <div
+      className={
+        darkMode
+          ? "dashboard-page dark"
+          : "dashboard-page light"
+      }
+    >
+      <div className="dashboard">
 
-      <div className="dashboard-header">
+        <div className="dashboard-header">
 
-        <h1 className="dashboard-title">
-          NotesFlow Dashboard
-        </h1>
+          <h1 className="dashboard-title">
+            NotesFlow Dashboard
+          </h1>
 
-        <div className="header-actions">
+          <div className="header-actions">
 
-          <div className="usage-card">
-            <span>
-              AI Usage: {summaryUsage.used}/20
-            </span>
+            <div className="usage-card">
+              <span>
+                AI Usage: {summaryUsage.used}/20
+              </span>
 
-            <span>
-              Remaining: {summaryUsage.remaining}
-            </span>
+              <span>
+                Remaining: {summaryUsage.remaining}
+              </span>
+            </div>
+
+            <button
+              className="theme-btn"
+              onClick={toggleTheme}
+            >
+              {
+                darkMode
+                  ? "☀️ Light"
+                  : "🌙 Dark"
+              }
+            </button>
+
+            <button
+              className="export-btn"
+              onClick={exportPDF}
+            >
+              📄 Export Notes as PDF
+            </button>
+
+            <button
+              className="logout-btn"
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate("/");
+              }}
+            >
+              Logout
+            </button>
+
           </div>
-
-          <button
-            className="theme-btn"
-            onClick={toggleTheme}
-          >
-            {
-              darkMode
-                ? "☀️ Light"
-                : "🌙 Dark"
-            }
-          </button>
-
-          <button
-            className="export-btn"
-            onClick={exportPDF}
-          >
-            📄 Export Notes as PDF
-          </button>
-
-          <button
-            className="logout-btn"
-            onClick={() => {
-              localStorage.removeItem("token");
-              navigate("/");
-            }}
-          >
-            Logout
-          </button>
 
         </div>
 
-      </div>
+        <div className="note-form">
 
-      <div className="note-form">
-
-        <h2>
-          {
-            editId
-              ? "Update Note"
-              : "Create Note"
-          }
-        </h2>
-
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) =>
-            setTitle(e.target.value)
-          }
-        />
-
-        <textarea
-          placeholder="Content"
-          value={content}
-          onChange={(e) =>
-            setContent(e.target.value)
-          }
-        />
-
-        <button
-          className="primary-btn"
-          onClick={
-            editId
-              ? updateNote
-              : createNote
-          }
-        >
-          {
-            editId
-              ? "Update Note"
-              : "Create Note"
-          }
-        </button>
-
-      </div>
-
-      <div className="notes-section">
-
-        <div className="notes-header">
-
-          <h2>Your Notes</h2>
+          <h2>
+            {
+              editId
+                ? "Update Note"
+                : "Create Note"
+            }
+          </h2>
 
           <input
-            className="search-input"
             type="text"
-            placeholder="🔍 Search notes..."
-            value={searchTerm}
+            placeholder="Title"
+            value={title}
             onChange={(e) =>
-              setSearchTerm(e.target.value)
+              setTitle(e.target.value)
             }
           />
 
+          <textarea
+            placeholder="Content"
+            value={content}
+            onChange={(e) =>
+              setContent(e.target.value)
+            }
+          />
+
+          <button
+            className="primary-btn"
+            onClick={
+              editId
+                ? updateNote
+                : createNote
+            }
+          >
+            {
+              editId
+                ? "Update Note"
+                : "Create Note"
+            }
+          </button>
+
+        </div>
+
+        <div className="notes-section">
+
+          <div className="notes-header">
+
+            <h2>Your Notes</h2>
+
+            <input
+              className="search-input"
+              type="text"
+              placeholder="🔍 Search notes..."
+              value={searchTerm}
+              onChange={(e) =>
+                setSearchTerm(e.target.value)
+              }
+            />
+
+          </div>
+
+          {
+            filteredNotes.length > 0 ? (
+
+              filteredNotes.map((note) => (
+
+                <div
+                  key={note._id}
+                  className="note-card"
+                >
+
+                  <h3>{note.title}</h3>
+
+                  <p>{note.content}</p>
+
+                  <button
+                    className="edit-btn"
+                    onClick={() => {
+                      setTitle(note.title);
+                      setContent(note.content);
+                      setEditId(note._id);
+                    }}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="delete-btn"
+                    onClick={() => {
+                      setNoteToDelete(note._id);
+                      setShowDeleteModal(true);
+                    }}
+                  >
+                    Delete
+                  </button>
+
+                  <button
+                    className="primary-btn"
+                    disabled={
+                      loadingSummary[note.content]
+                    }
+                    onClick={() =>
+                      generateSummary(
+                        note.content
+                      )
+                    }
+                  >
+                    {
+                      loadingSummary[note.content]
+                        ? (
+                          <>
+                            <span className="spinner"></span>
+                            Generating...
+                          </>
+                        )
+                        : (
+                          "🤖 Generate Summary"
+                        )
+                    }
+                  </button>
+
+                  <button
+                    className="primary-btn"
+                    disabled={
+                      loadingQuiz[note.content]
+                    }
+                    onClick={() =>
+                      generateQuiz(
+                        note.content
+                      )
+                    }
+                  >
+                    {
+                      loadingQuiz[note.content]
+                        ? (
+                          <>
+                            <span className="spinner"></span>
+                            Generating Quiz...
+                          </>
+                        )
+                        : (
+                          "🧠 Generate Quiz"
+                        )
+                    }
+                  </button>
+
+                  {
+                    summaries[note.content] && (
+
+                      <div className="summary-box">
+
+                        <div className="summary-header">
+
+                          <h4>
+                            🤖 AI Summary
+                          </h4>
+
+                          <button
+                            className="copy-btn"
+                            onClick={() => {
+
+                              navigator.clipboard.writeText(
+                                summaries[note.content]
+                              );
+
+                              toast.success(
+                                "Summary copied!"
+                              );
+
+                            }}
+                          >
+                            📋 Copy
+                          </button>
+
+                        </div>
+
+                        <p>
+                          {
+                            summaries[
+                            note.content
+                            ]
+                          }
+                        </p>
+
+                      </div>
+
+                    )
+                  }
+
+                
+                </div>
+
+              ))
+
+            ) : (
+
+              <div className="no-notes">
+
+                <div className="empty-icon">
+                  🔍
+                </div>
+
+                <h2>
+                  No Notes Found
+                </h2>
+
+                <p>
+                  We couldn't find any notes matching
+                </p>
+
+                <div className="search-text">
+                  "{searchTerm}"
+                </div>
+
+                <button
+                  className="clear-search-btn"
+                  onClick={() =>
+                    setSearchTerm("")
+                  }
+                >
+                  Clear Search
+                </button>
+
+              </div>
+
+            )
+          }
+
         </div>
 
         {
-          filteredNotes.length > 0 ? (
+          showDeleteModal && (
 
-            filteredNotes.map((note) => (
+            <div className="modal-overlay">
 
-              <div
-                key={note._id}
-                className="note-card"
-              >
+              <div className="delete-modal">
 
-                <h3>{note.title}</h3>
+                <h2>
+                  Delete Note?
+                </h2>
 
-                <p>{note.content}</p>
+                <p>
+                  This action cannot be undone.
+                </p>
 
-                <button
-                  className="edit-btn"
-                  onClick={() => {
-                    setTitle(note.title);
-                    setContent(note.content);
-                    setEditId(note._id);
-                  }}
-                >
-                  Edit
-                </button>
+                <div className="modal-buttons">
 
-                <button
-                  className="delete-btn"
-                  onClick={() => {
-                    setNoteToDelete(note._id);
-                    setShowDeleteModal(true);
-                  }}
-                >
-                  Delete
-                </button>
+                  <button
+                    className="cancel-btn"
+                    onClick={() => {
+                      setShowDeleteModal(false);
+                      setNoteToDelete(null);
+                    }}
+                  >
+                    Cancel
+                  </button>
 
-                <button
-                  className="primary-btn"
-                  disabled={
-                    loadingSummary[note.content]
-                  }
-                  onClick={() =>
-                    generateSummary(
-                      note.content
-                    )
-                  }
-                >
-                  {
-                    loadingSummary[note.content]
-                      ? (
-                        <>
-                          <span className="spinner"></span>
-                          Generating...
-                        </>
-                      )
-                      : (
-                        "🤖 Generate Summary"
-                      )
-                  }
-                </button>
+                  <button
+                    className="confirm-delete-btn"
+                    onClick={() => {
+                      deleteNote(noteToDelete);
+                      setShowDeleteModal(false);
+                      setNoteToDelete(null);
+                      toast.success(
+                        "Note deleted"
+                      );
+                    }}
+                  >
+                    Delete
+                  </button>
 
-                <button
-                  className="primary-btn"
-                  disabled={
-                    loadingQuiz[note.content]
-                  }
-                  onClick={() =>
-                    generateQuiz(
-                      note.content
-                    )
-                  }
-                >
-                  {
-                    loadingQuiz[note.content]
-                      ? (
-                        <>
-                          <span className="spinner"></span>
-                          Generating Quiz...
-                        </>
-                      )
-                      : (
-                        "🧠 Generate Quiz"
-                      )
-                  }
-                </button>
-
-                {
-                  summaries[note.content] && (
-
-                    <div className="summary-box">
-
-                      <div className="summary-header">
-
-                        <h4>
-                          🤖 AI Summary
-                        </h4>
-
-                        <button
-                          className="copy-btn"
-                          onClick={() => {
-
-                            navigator.clipboard.writeText(
-                              summaries[note.content]
-                            );
-
-                            toast.success(
-                              "Summary copied!"
-                            );
-
-                          }}
-                        >
-                          📋 Copy
-                        </button>
-
-                      </div>
-
-                      <p>
-                        {
-                          summaries[
-                            note.content
-                          ]
-                        }
-                      </p>
-
-                    </div>
-
-                  )
-                }
-
-                {
-                  quizzes[note.content] && (
-
-                    <div className="summary-box">
-
-                      <div className="summary-header">
-
-                        <h4>
-                          🧠 AI Quiz
-                        </h4>
-
-                        <button
-                          className="copy-btn"
-                          onClick={() => {
-
-                            navigator.clipboard.writeText(
-                              quizzes[note.content]
-                            );
-
-                            toast.success(
-                              "Quiz copied!"
-                            );
-
-                          }}
-                        >
-                          📋 Copy
-                        </button>
-
-                      </div>
-
-                      <pre className="quiz-content">
-                        {quizzes[note.content]}
-                      </pre>
-
-                    </div>
-
-                  )
-                }
+                </div>
 
               </div>
-
-            ))
-
-          ) : (
-
-            <div className="no-notes">
-
-              <div className="empty-icon">
-                🔍
-              </div>
-
-              <h2>
-                No Notes Found
-              </h2>
-
-              <p>
-                We couldn't find any notes matching
-              </p>
-
-              <div className="search-text">
-                "{searchTerm}"
-              </div>
-
-              <button
-                className="clear-search-btn"
-                onClick={() =>
-                  setSearchTerm("")
-                }
-              >
-                Clear Search
-              </button>
 
             </div>
 
           )
         }
+         <QuizModal
+
+    quiz={currentQuiz}
+
+    isOpen={showQuizModal}
+
+    onClose={()=>{
+        setShowQuizModal(false);
+        setCurrentQuiz(null);
+    }}
+
+/>
 
       </div>
-
-      {
-        showDeleteModal && (
-
-          <div className="modal-overlay">
-
-            <div className="delete-modal">
-
-              <h2>
-                Delete Note?
-              </h2>
-
-              <p>
-                This action cannot be undone.
-              </p>
-
-              <div className="modal-buttons">
-
-                <button
-                  className="cancel-btn"
-                  onClick={() => {
-                    setShowDeleteModal(false);
-                    setNoteToDelete(null);
-                  }}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  className="confirm-delete-btn"
-                  onClick={() => {
-                    deleteNote(noteToDelete);
-                    setShowDeleteModal(false);
-                    setNoteToDelete(null);
-                    toast.success(
-                      "Note deleted"
-                    );
-                  }}
-                >
-                  Delete
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        )
-      }
-
+     
     </div>
-  </div>
-);
+  );
 }
 export default Dashboard;
