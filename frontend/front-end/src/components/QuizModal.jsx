@@ -1,5 +1,20 @@
 import { useEffect } from "react";
+const [currentQuestion, setCurrentQuestion] = useState(0);
 
+const [selectedAnswers, setSelectedAnswers] = useState({});
+
+const [submitted, setSubmitted] = useState(false);
+
+const [showSubmitModal, setShowSubmitModal] = useState(false);
+const score = quiz.reduce((total, q, index) => {
+
+  if (selectedAnswers[index] === q.answer) {
+    return total + 1;
+  }
+
+  return total;
+
+}, 0);
 function QuizModal({
   quiz,
   isOpen,
