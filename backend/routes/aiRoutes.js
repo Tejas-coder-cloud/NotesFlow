@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const {
     generateSummary,
-    getUsage
+    getUsage,
+    generateQuiz
 } = require("../controllers/aiController");
 const authMiddleware =
     require("../middleware/authMiddleware");
@@ -15,5 +16,10 @@ router.get(
     "/usage",
     authMiddleware,
     getUsage
+);
+router.post(
+    "/quiz",
+    authMiddleware,
+    generateQuiz
 );
 module.exports = router;
