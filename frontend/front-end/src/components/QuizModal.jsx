@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect } from "react";
 
 function QuizModal({
   quiz,
   isOpen,
   onClose
 }) {
+
+  useEffect(() => {
+    console.log("Quiz:", quiz);
+  }, [quiz]);
 
   if (!isOpen || !quiz) return null;
 
@@ -20,9 +24,11 @@ function QuizModal({
           ✕
         </button>
 
-        <h1>
-          🧠 AI Quiz
-        </h1>
+        <h1>🧠 AI Quiz</h1>
+
+        <pre>
+          {JSON.stringify(quiz, null, 2)}
+        </pre>
 
       </div>
 
