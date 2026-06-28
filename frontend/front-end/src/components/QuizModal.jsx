@@ -1,25 +1,22 @@
-import { useEffect } from "react";
-const [currentQuestion, setCurrentQuestion] = useState(0);
+import { useState, useEffect } from "react";
 
-const [selectedAnswers, setSelectedAnswers] = useState({});
-
-const [submitted, setSubmitted] = useState(false);
-
-const [showSubmitModal, setShowSubmitModal] = useState(false);
-const score = quiz.reduce((total, q, index) => {
-
-  if (selectedAnswers[index] === q.answer) {
-    return total + 1;
-  }
-
-  return total;
-
-}, 0);
 function QuizModal({
   quiz,
   isOpen,
   onClose
 }) {
+
+  const [currentQuestion, setCurrentQuestion] =
+    useState(0);
+
+  const [selectedAnswers, setSelectedAnswers] =
+    useState({});
+
+  const [submitted, setSubmitted] =
+    useState(false);
+
+  const [showSubmitModal, setShowSubmitModal] =
+    useState(false);
 
   useEffect(() => {
     console.log("Quiz:", quiz);
@@ -27,7 +24,18 @@ function QuizModal({
 
   if (!isOpen || !quiz) return null;
 
+  const score = quiz.reduce((total, q, index) => {
+
+    if (selectedAnswers[index] === q.answer) {
+      return total + 1;
+    }
+
+    return total;
+
+  }, 0);
+
   return (
+
     <div className="quiz-overlay">
 
       <div className="quiz-modal">
@@ -48,6 +56,7 @@ function QuizModal({
       </div>
 
     </div>
+
   );
 }
 
