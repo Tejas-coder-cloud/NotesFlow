@@ -5,23 +5,139 @@ function QuizModal({
   isOpen,
   onClose
 }) {
-
   if (!isOpen || !quiz) return null;
-
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [showSubmitModal, setShowSubmitModal] = useState(false);
+const [selectedAnswers, setSelectedAnswers] = useState({});
 
 const [submitted, setSubmitted] = useState(false);
 
-  const question = quiz[currentQuestion];
+const [reviewMode, setReviewMode] = useState(false);
 
+const [showSubmitModal, setShowSubmitModal] = useState(false);
+  if (submitted) {
+
+    return (
+
+        <div className="quiz-overlay">
+
+            <div className="quiz-modal">
+
+                <h1>🎉 Quiz Completed</h1>
+
+                <h2>
+
+                    Your Score
+
+                </h2>
+
+                <div className="score-circle">
+
+                    {score}/{quiz.length}
+
+                </div>
+
+                <p>
+
+                    You answered
+
+                    <strong>
+
+                        {" "}
+                        {score}
+
+                    </strong>
+
+                    {" "}out of{" "}
+
+                    <strong>
+
+                        {quiz.length}
+
+                    </strong>
+
+                    {" "}questions correctly.
+
+                </p>
+
+                <div className="quiz-buttons">
+
+                    <button
+
+                        className="prev-btn"
+
+                        onClick={() => {
+
+                            setSubmitted(false);
+
+                            setCurrentQuestion(0);
+
+                            setSelectedAnswers({});
+
+                        }}
+
+                    >
+
+                        🔄 Retake Quiz
+
+                    </button>
+
+                    <button
+
+                        className="submit-btn"
+
+                        onClick={onClose}
+
+                    >
+
+                        Close
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    );
+
+}
+
+const question = quiz[currentQuestion];
+
+const score = quiz.reduce((total, q, index) => {
+
+    if (selectedAnswers[index] === q.answer)
+        return total + 1;
+
+    return total;
+
+}, 0);
+
+const percentage = Math.round(
+    (score / quiz.length) * 100
+  );
+  const performance = () => {
+
+    if (percentage === 100)
+        return "🌟 Perfect Score!";
+
+    if (percentage >= 80)
+        return "🏆 Excellent!";
+
+    if (percentage >= 60)
+        return "👍 Good Job!";
+
+    if (percentage >= 40)
+        return "📚 Keep Practicing!";
+
+    return "💪 Don't Give Up!";
+};
   const progress =
     ((currentQuestion + 1) / quiz.length) * 100;
-
+  
   return (
-
     <div className="quiz-overlay">
 
       <div className="quiz-modal">
