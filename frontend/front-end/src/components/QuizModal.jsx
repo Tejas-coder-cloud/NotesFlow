@@ -1,39 +1,21 @@
-import { useState, useEffect } from "react";
-
+import { useState } from "react";
+import "./QuizModal.css";
 function QuizModal({
   quiz,
   isOpen,
   onClose
 }) {
 
-  const [currentQuestion, setCurrentQuestion] =
-    useState(0);
-
-  const [selectedAnswers, setSelectedAnswers] =
-    useState({});
-
-  const [submitted, setSubmitted] =
-    useState(false);
-
-  const [showSubmitModal, setShowSubmitModal] =
-    useState(false);
-
-  useEffect(() => {
-    console.log("Quiz:", quiz);
-  }, [quiz]);
-
   if (!isOpen || !quiz) return null;
 
-  const score = quiz.reduce((total, q, index) => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
 
-    if (selectedAnswers[index] === q.answer) {
-      return total + 1;
-    }
+  const [selectedAnswers, setSelectedAnswers] = useState({});
 
-    return total;
+  const question = quiz[currentQuestion];
 
-  }, 0);
-   const question = quiz[currentQuestion];
+  const progress =
+    ((currentQuestion + 1) / quiz.length) * 100;
 
   return (
 
@@ -48,106 +30,150 @@ function QuizModal({
           ✕
         </button>
 
-        <h1>🧠 AI Quiz</h1>
+        <div className="quiz-top">
 
-        <div className="quiz-progress">
+          <div>
 
-    <div
-        className="progress-fill"
-        style={{
-            width: `${((currentQuestion + 1) / quiz.length) * 100}%`
-        }}
-    />
+            <h1>🧠 AI Quiz</h1>
 
-</div>
+            <p>
+              Test your knowledge
+            </p>
 
-<h3 className="question-number">
-    Question {currentQuestion + 1} of {quiz.length}
-</h3>
+          </div>
 
-<div className="question-card">
+        </div>
 
-    <h2>
-        {question.question}
-    </h2>
+        <div className="progress">
 
-</div>
+          <div
+            className="progress-fill"
+            style={{
+              width: `${progress}%`
+            }}
+          ></div>
 
-<div className="options">
+        </div>
 
-    {
-        question.options.map((option, index) => (
+        <h2 className="question-count">
 
-            <label
-                key={index}
-                className="option-card"
+          Question {currentQuestion + 1}
+
+          of
+
+          {quiz.length}
+
+        </h2>
+
+        <div className="question-card">
+
+          <div className="question-icon">
+            Q
+          </div>
+
+          <h3>
+            {question.question}
+          </h3>
+
+        </div>
+
+        <div className="options">
+
+          {question.options.map((option, index) => (
+
+            <div
+
+              key={index}
+
+              className={`option ${
+                selectedAnswers[currentQuestion] === index
+                  ? "selected"
+                  : ""
+              }`}
+
+              onClick={() =>
+
+                setSelectedAnswers({
+
+                  ...selectedAnswers,
+
+                  [currentQuestion]: index
+
+                })
+
+              }
+
             >
 
-                <input
-                    type="radio"
-                    name={`question-${currentQuestion}`}
-                    checked={
-                        selectedAnswers[currentQuestion] === index
-                    }
-                    onChange={() =>
-                        setSelectedAnswers({
-                            ...selectedAnswers,
-                            [currentQuestion]: index
-                        })
-                    }
-                />
+              <div className="radio"></div>
 
+              <span>
                 {option}
+              </span>
 
-            </label>
+            </div>
 
-        ))
-    }
+          ))}
 
-</div>
+        </div>
 
-<div className="quiz-buttons">
+        <div className="quiz-buttons">
 
-    <button
-        disabled={currentQuestion === 0}
-        onClick={() =>
-            setCurrentQuestion(currentQuestion - 1)
-        }
-    >
-        ← Previous
-    </button>
+          <button
 
-    {
-        currentQuestion < quiz.length - 1 ? (
+            className="prev-btn"
 
-            <button
-                onClick={() =>
-                    setCurrentQuestion(currentQuestion + 1)
-                }
-            >
-                Next →
-            </button>
+            disabled={currentQuestion === 0}
 
-        ) : (
+            onClick={() =>
 
-            <button
-                onClick={() =>
-                    setShowSubmitModal(true)
-                }
-            >
-                Submit Quiz
-            </button>
+              setCurrentQuestion(
 
-        )
-    }
+                currentQuestion - 1
 
-</div>
+              )
+
+            }
+
+          >
+
+            ← Previous
+
+          </button>
+
+          <button
+
+            className="next-btn"
+
+            disabled={
+              currentQuestion ===
+              quiz.length - 1
+            }
+
+            onClick={() =>
+
+              setCurrentQuestion(
+
+                currentQuestion + 1
+
+              )
+
+            }
+
+          >
+
+            Next →
+
+          </button>
+
+        </div>
 
       </div>
 
     </div>
 
   );
+
 }
 
 export default QuizModal;
