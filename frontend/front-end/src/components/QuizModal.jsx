@@ -141,35 +141,83 @@ function QuizModal({
 
           </button>
 
-          <button
+         {
+currentQuestion === quiz.length - 1 ?
 
-            className="next-btn"
+(
 
-            disabled={
-              currentQuestion ===
-              quiz.length - 1
-            }
+<button
+className="submit-btn"
+onClick={() => setShowSubmitModal(true)}
+>
+🚀 Submit Quiz
+</button>
 
-            onClick={() =>
+)
 
-              setCurrentQuestion(
+:
 
-                currentQuestion + 1
+(
 
-              )
+<button
+className="next-btn"
+onClick={() =>
+setCurrentQuestion(currentQuestion + 1)
+}
+>
+Next →
+</button>
 
-            }
-
-          >
-
-            Next →
-
-          </button>
+)
+}
 
         </div>
 
       </div>
+    {
+showSubmitModal && (
 
+<div className="modal-overlay">
+
+<div className="delete-modal">
+
+<h2>
+Submit Quiz?
+</h2>
+
+<p>
+After submitting you won't be able to change your answers.
+</p>
+
+<div className="modal-buttons">
+
+<button
+className="cancel-btn"
+onClick={() =>
+setShowSubmitModal(false)
+}
+>
+Cancel
+</button>
+
+<button
+className="confirm-delete-btn"
+onClick={()=>{
+setSubmitted(true);
+setShowSubmitModal(false);
+}}
+>
+Submit
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+)
+}
     </div>
 
   );
