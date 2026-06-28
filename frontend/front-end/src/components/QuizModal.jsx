@@ -11,6 +11,9 @@ function QuizModal({
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
+
+const [submitted, setSubmitted] = useState(false);
 
   const question = quiz[currentQuestion];
 
