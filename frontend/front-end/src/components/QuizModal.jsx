@@ -12,7 +12,7 @@ const [selectedAnswers, setSelectedAnswers] = useState({});
 
 const [submitted, setSubmitted] = useState(false);
 
-// const [reviewMode, setReviewMode] = useState(false);
+const [reviewMode, setReviewMode] = useState(false);
 
 const [showSubmitModal, setShowSubmitModal] = useState(false);
 if (!isOpen || !quiz) return null;
@@ -48,6 +48,109 @@ const percentage = Math.round(
 };
   const progress =
     ((currentQuestion + 1) / quiz.length) * 100;
+
+if (reviewMode) {
+
+    return (
+
+        <div className="quiz-overlay">
+
+            <div className="quiz-modal review-modal">
+
+                <button
+                    className="close-quiz"
+                    onClick={() => setReviewMode(false)}
+                >
+                    ✕
+                </button>
+
+                <h1>📖 Review Answers</h1>
+
+                {
+
+                    quiz.map((q, questionIndex) => (
+
+                        <div
+                            key={questionIndex}
+                            className="review-question"
+                        >
+
+                            <h3>
+
+                                Question {questionIndex + 1}
+
+                            </h3>
+
+                            <p>{q.question}</p>
+
+                            {
+
+                                q.options.map((option, optionIndex) => (
+
+                                    <div
+
+                                        key={optionIndex}
+
+                                        className={`review-option
+
+                                        ${
+
+                                            optionIndex === q.answer
+
+                                                ? "correct"
+
+                                                : selectedAnswers[questionIndex] === optionIndex
+
+                                                    ? "wrong"
+
+                                                    : ""
+
+                                        }
+
+                                        `}
+
+                                    >
+
+                                        {option}
+
+                                    </div>
+
+                                ))
+
+                            }
+
+                            <div className="explanation">
+
+                                💡 {q.explanation}
+
+                            </div>
+
+                        </div>
+
+                    ))
+
+                }
+
+                <button
+
+                    className="submit-btn"
+
+                    onClick={() => setReviewMode(false)}
+
+                >
+
+                    ← Back to Score
+
+                </button>
+
+            </div>
+
+        </div>
+
+    );
+
+}
+
   if (submitted) {
 
     return (
@@ -93,50 +196,67 @@ You scored
 
                
 
-                <div className="quiz-buttons">
+<div className="quiz-buttons">
 
-                    <button
+    <button
 
-                        className="prev-btn"
+        className="review-btn"
 
-                        onClick={() => {
+        onClick={() => setReviewMode(true)}
 
-                            setSubmitted(false);
+    >
 
-                            setCurrentQuestion(0);
+        📖 Review Answers
 
-                            setSelectedAnswers({});
+    </button>
 
-                        }}
+    <button
 
-                    >
+        className="prev-btn"
 
-                        🔄 Retake Quiz
+        onClick={() => {
 
-                    </button>
+            setSubmitted(false);
 
-                    <button
+            setCurrentQuestion(0);
 
-                        className="submit-btn"
+            setSelectedAnswers({});
 
-                         onClick={() => {
+        }}
 
-        setSubmitted(false);
-        setCurrentQuestion(0);
-        setSelectedAnswers({});
-        setShowSubmitModal(false);
+    >
 
-        onClose();
+        🔄 Retake Quiz
 
-    }}
+    </button>
 
-                    >
+    <button
 
-                        Close
+        className="submit-btn"
 
-                    </button>
+        onClick={() => {
 
-                </div>
+            setSubmitted(false);
+
+            setCurrentQuestion(0);
+
+            setSelectedAnswers({});
+
+            setShowSubmitModal(false);
+
+            setReviewMode(false);
+
+            onClose();
+
+        }}
+
+    >
+
+        Close
+
+    </button>
+
+</div>
 
             </div>
 
