@@ -433,3 +433,26 @@ cursor:pointer;
 font-weight:bold;
 
 }
+.score-text{
+
+    margin-top:25px;
+
+    text-align:center;
+
+    font-size:24px;
+
+    color:#e5e7eb;
+
+    line-height:1.6;
+
+}
+
+.score-number{
+
+    color:#8b5cf6;
+
+    font-size:30px;
+
+    font-weight:bold;
+
+}

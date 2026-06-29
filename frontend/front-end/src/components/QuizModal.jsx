@@ -172,25 +172,25 @@ if (reviewMode) {
 {percentage}%
 
 </div>
-<p>
+<p className="score-text">
 
-You scored
+    You scored
 
-<strong>
+    <span className="score-number">
 
- {score}
+        {score}
 
-</strong>
+    </span>
 
- out of
+    {" "} out of {" "}
 
-<strong>
+    <span className="score-number">
 
- {quiz.length}
+        {quiz.length}
 
-</strong>
+    </span>
 
- questions correctly.
+    {" "}questions correctly.
 
 </p>
 
