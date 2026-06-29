@@ -5,105 +5,17 @@ function QuizModal({
   isOpen,
   onClose
 }) {
-  if (!isOpen || !quiz) return null;
+  
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
 const [selectedAnswers, setSelectedAnswers] = useState({});
 
 const [submitted, setSubmitted] = useState(false);
 
-const [reviewMode, setReviewMode] = useState(false);
+// const [reviewMode, setReviewMode] = useState(false);
 
 const [showSubmitModal, setShowSubmitModal] = useState(false);
-  if (submitted) {
-
-    return (
-
-        <div className="quiz-overlay">
-
-            <div className="quiz-modal">
-
-                <h1>🎉 Quiz Completed</h1>
-
-                <h2>
-
-                    Your Score
-
-                </h2>
-
-                <div className="score-circle">
-
-                    {score}/{quiz.length}
-
-                </div>
-
-                <p>
-
-                    You answered
-
-                    <strong>
-
-                        {" "}
-                        {score}
-
-                    </strong>
-
-                    {" "}out of{" "}
-
-                    <strong>
-
-                        {quiz.length}
-
-                    </strong>
-
-                    {" "}questions correctly.
-
-                </p>
-
-                <div className="quiz-buttons">
-
-                    <button
-
-                        className="prev-btn"
-
-                        onClick={() => {
-
-                            setSubmitted(false);
-
-                            setCurrentQuestion(0);
-
-                            setSelectedAnswers({});
-
-                        }}
-
-                    >
-
-                        🔄 Retake Quiz
-
-                    </button>
-
-                    <button
-
-                        className="submit-btn"
-
-                        onClick={onClose}
-
-                    >
-
-                        Close
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    );
-
-}
-
+if (!isOpen || !quiz) return null;
 const question = quiz[currentQuestion];
 
 const score = quiz.reduce((total, q, index) => {
@@ -136,6 +48,106 @@ const percentage = Math.round(
 };
   const progress =
     ((currentQuestion + 1) / quiz.length) * 100;
+  if (submitted) {
+
+    return (
+
+        <div className="quiz-overlay">
+
+            <div className="quiz-modal">
+
+                <h1>🎉 Quiz Completed</h1>
+
+<h2>
+
+{performance()}
+
+</h2>
+
+<div className="score-circle">
+
+{percentage}%
+
+</div>
+<p>
+
+You scored
+
+<strong>
+
+ {score}
+
+</strong>
+
+ out of
+
+<strong>
+
+ {quiz.length}
+
+</strong>
+
+ questions correctly.
+
+</p>
+
+               
+
+                <div className="quiz-buttons">
+
+                    <button
+
+                        className="prev-btn"
+
+                        onClick={() => {
+
+                            setSubmitted(false);
+
+                            setCurrentQuestion(0);
+
+                            setSelectedAnswers({});
+
+                        }}
+
+                    >
+
+                        🔄 Retake Quiz
+
+                    </button>
+
+                    <button
+
+                        className="submit-btn"
+
+                         onClick={() => {
+
+        setSubmitted(false);
+        setCurrentQuestion(0);
+        setSelectedAnswers({});
+        setShowSubmitModal(false);
+
+        onClose();
+
+    }}
+
+                    >
+
+                        Close
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    );
+
+}
+
+
+
   
   return (
     <div className="quiz-overlay">
@@ -144,7 +156,19 @@ const percentage = Math.round(
 
         <button
           className="close-quiz"
-          onClick={onClose}
+          onClick={() => {
+
+    setCurrentQuestion(0);
+
+    setSelectedAnswers({});
+
+    setSubmitted(false);
+
+    setShowSubmitModal(false);
+
+    onClose();
+
+  }}
         >
           ✕
         </button>
@@ -174,15 +198,9 @@ const percentage = Math.round(
 
         </div>
 
-        <h2 className="question-count">
-
-          Question {currentQuestion + 1}
-
-          of
-
-          {quiz.length}
-
-        </h2>
+       <h2 className="question-count">
+  Question {currentQuestion + 1} / {quiz.length}
+</h2>
 
         <div className="question-card">
 
@@ -209,18 +227,16 @@ const percentage = Math.round(
                   ? "selected"
                   : ""
               }`}
+onClick={() => {
 
-              onClick={() =>
+    if (submitted) return;
 
-                setSelectedAnswers({
+    setSelectedAnswers({
+        ...selectedAnswers,
+        [currentQuestion]: index
+    });
 
-                  ...selectedAnswers,
-
-                  [currentQuestion]: index
-
-                })
-
-              }
+}}
 
             >
 
@@ -267,6 +283,9 @@ currentQuestion === quiz.length - 1 ?
 
 <button
 className="submit-btn"
+disabled={
+selectedAnswers[currentQuestion] === undefined
+}
 onClick={() => setShowSubmitModal(true)}
 >
 🚀 Submit Quiz
@@ -280,6 +299,9 @@ onClick={() => setShowSubmitModal(true)}
 
 <button
 className="next-btn"
+disabled={
+selectedAnswers[currentQuestion] === undefined
+}
 onClick={() =>
 setCurrentQuestion(currentQuestion + 1)
 }

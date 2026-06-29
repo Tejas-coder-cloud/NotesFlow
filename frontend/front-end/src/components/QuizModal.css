@@ -333,3 +333,12 @@ font-size:18px;
 margin-bottom:30px;
 
 }
+.prev-btn:disabled{
+
+opacity:.45;
+
+cursor:not-allowed;
+
+transform:none;
+
+}
